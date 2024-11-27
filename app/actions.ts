@@ -1,30 +1,28 @@
 "use server";
 
-interface FormState {
-  isSuccess: boolean;
-  error?: string;
-}
+import { z } from "zod";
 
-export async function handleForm(
-  _: unknown,
-  formData: FormData
-): Promise<FormState> {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+const formSchema = z.object({
+  email: z
+    .string()
+    .email()
+    .includes("@zod.com", { message: "Only @zod.com emails are allowed" }),
+  username: z.string().min(5, "Username should be at least 5 characters long."),
+  password: z
+    .string()
+    .min(10, "Password should be at least 10 characters long")
+    .regex(/\d/, "Password must contain at least one number"),
+});
 
-  const username = formData.get("username");
-  const email = formData.get("email");
-  const password = formData.get("password");
-
-  if (password === null || email === null || username === null) {
-    return { isSuccess: false, error: "Please fill out all fields." };
-  }
-
-  if (password === "12345") {
-    return { isSuccess: true };
-  }
-
-  return {
-    isSuccess: false,
-    error: "Wrong password.",
+export async function handleForm(_: unknown, formData: FormData) {
+  const data = {
+    username: formData.get("username"),
+    email: formData.get("email"),
+    password: formData.get("password"),
   };
+
+  const result = formSchema.safeParse(data);
+  if (!result.success) {
+    return result.error.flatten();
+  }
 }

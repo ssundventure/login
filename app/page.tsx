@@ -22,12 +22,14 @@ export default function Home() {
           type="email"
           placeholder="Email"
           required={true}
+          errors={state?.fieldErrors.email}
           labelIcon={<EnvelopeIcon />}
         />
         <Input
           name="username"
           placeholder="Username"
           required={true}
+          errors={state?.fieldErrors.username}
           labelIcon={<UserIcon />}
         />
         <Input
@@ -35,11 +37,11 @@ export default function Home() {
           type="password"
           placeholder="Password"
           required={true}
-          error={state?.error}
+          errors={state?.fieldErrors.password}
           labelIcon={<KeyIcon />}
         />
         <Button text="Log in" />
-        {state?.isSuccess && <SuccessMessage />}
+        {!state?.fieldErrors && <SuccessMessage />}
       </form>
     </main>
   );
